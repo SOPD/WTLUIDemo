@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
-class ZXField : public CWindowImpl<ZXField,CEdit>
+#include "ViewLayoutExtension.h"
+class ZXField : public CWindowImpl<ZXField,CEdit>, public LayoutAbleViewImpl
 {
 public:
 	CString currentText;
@@ -9,9 +10,23 @@ public:
 
 		REFLECTED_COMMAND_CODE_HANDLER(EN_CHANGE, OnTextChange)
 		REFLECTED_COMMAND_CODE_HANDLER(EN_UPDATE, OnTextWillChange)
-
+		MSG_WM_SIZE(OnSize)
 		DEFAULT_REFLECTION_HANDLER()
 	END_MSG_MAP()
+
+
+
+	void OnSize(UINT nType, CSize size) {
+
+		GetWindowRect(&windowRect);
+		ScreenToClient(&windowRect);
+
+		changeSize();
+	}
+
+	void onLayout() {
+		MoveWindow(this->windowRect);
+	}
 
 	LRESULT OnTextChange(UINT code, UINT id, HWND hCtrl, BOOL &bHandled) {
 		

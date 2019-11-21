@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "ZXTools.h"
+#include "ViewLayoutExtension.h"
 class TableViewCell :public CWindowImpl<TableViewCell, CWindow>, public CDoubleBufferImpl<TableViewCell>
 {
 public:
@@ -14,9 +15,9 @@ public:
 
 	void OnPaint(CDCHandle)
 	{
-
+	
+	
 		CPaintDC dc(m_hWnd);
-
 		DoPaint(dc.m_hDC);
 
 	}
@@ -34,9 +35,7 @@ public:
 			text.GetLength(), NULL);
 	}
 	void setText(CString text) {
-	
 		this->text = text;
-	
 	}
 	void setCellId(CString text) {
 

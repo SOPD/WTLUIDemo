@@ -11,7 +11,7 @@
 .classpath
 .project
 .settings      
- ##filter databfile¡¢sln file##
+ ##filter databfileï¿½ï¿½sln file##
 *.mdb  
 *.ldb  
 *.sln    
@@ -188,3 +188,5 @@ $RECYCLE.BIN/
 # Mac crap
 .DS_Store
 Project1/Project1.VC.db
+Project1/Project1/Project1.VC.db
+Project1/Project1/Project1.VC.VC.opendb

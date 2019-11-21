@@ -30,9 +30,6 @@ public:
 	void DoPaint(CDCHandle  cdc) {
 
 
-
-	
-
 			HBRUSH br = CreateSolidBrush(RGB(0, 255, 0));
 
 			CRect rc;

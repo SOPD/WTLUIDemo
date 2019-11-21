@@ -30,6 +30,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="MyWindow.h" />
+    <ClInclude Include="ViewLayoutExtension.h" />
     <ClInclude Include="views\TableView.h" />
     <ClInclude Include="TestView.h" />
     <ClInclude Include="views\TableViewCell.h" />

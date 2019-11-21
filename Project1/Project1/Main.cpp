@@ -16,7 +16,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 		// Show the window
 
-		
+	
    AboutDialog dlg;
    
    dlg.DoModal();

@@ -3,8 +3,10 @@
 #include "ZXField.h"
 #include "ZXTools.h"
 #include "TestView.h"
-
-class AboutDialog : public  CDialogImpl<AboutDialog>{
+#include "ViewLayoutExtension.h"
+class AboutDialog : public  CDialogImpl<AboutDialog>, public LayoutAbleViewImpl
+{
+	
 public:
 	TestView test;
 	
@@ -15,24 +17,56 @@ public:
 	BEGIN_MSG_MAP(AboutDialog)
 		MSG_WM_INITDIALOG(OnInitDialog)
 		MSG_WM_PAINT(OnPaint)
+		MSG_WM_SIZE(OnSize)
 		COMMAND_ID_HANDLER(IDCANCEL,OnCancle)
 		COMMAND_ID_HANDLER(IDOK,OnOK )
+
 		REFLECT_NOTIFICATIONS()
 	END_MSG_MAP()
 
 	BOOL OnInitDialog(CWindow wndFocus, LPARAM lInitParam) {
-	
-		
-		
+		//selfWindow = this;
+
 	    fieldAccount.Create(m_hWnd, rectExtension::ZXRectCreatWith(100,20,100,20), _T("admin"), 0, 0, 0U, NULL);
 
+		fieldTest.Create(m_hWnd, rectExtension::ZXRectCreatWith(300, 20, 100, 20), _T("TEST"), 0, 0, 0U, NULL);
+
 		fieldPWD.Create(m_hWnd, rectExtension::ZXRectCreatWith(100, 80, 100, 20), _T("123456"), 0, 0, 0U, NULL);
+
 		fieldPWD.SetPasswordChar('*');
+
+
+		fieldAccount.make()->height()->width()->equalTo(this, -200);
+		fieldAccount.make()->left()->top()->equalTo(this, 50);
+		
+		fieldPWD.make()->height()->equalTo(this, -200);
+		fieldPWD.make()->top()->equalTo(this, 50);
+		fieldPWD.make()->right()->equalTo(this, -30);
+		fieldPWD.make()->left()->equalTo(fieldAccount.layout_right(), 20);
+
+		fieldTest.make()->top()->equalTo(fieldPWD.layout_bottom(), 10);
+		fieldTest.make()->bottom()->equalTo(this, -20);
+		fieldTest.make()->left()->equalTo(this, 20);
+		fieldTest.make()->right()->equalTo(this, -20);
+
+
 
 		return true;
 	}
 
 
+    void onLayout() {
+		MoveWindow(this->windowRect);
+	}
+	void OnSize(UINT nType, CSize size) {
+	
+		GetWindowRect(&windowRect);
+		
+		ScreenToClient(&windowRect);
+
+		changeSize();
+	
+	}
 
 	void OnPaint(CDCHandle dc) {
 
@@ -92,7 +126,7 @@ public:
 		else {
 			EndDialog(wID);
 			if (NULL == test.Create(NULL, CWindow::rcDefault,
-				_T("My First ATL Window"),WS_CLIPCHILDREN))
+				_T("My First ATL Window"),WS_CLIPCHILDREN | WS_SYSMENU | WS_VISIBLE))
 				return 1;       // Window creation failed
 
 			
@@ -102,7 +136,6 @@ public:
 
 		}
 
-		
 		return 0;
 
 	}
@@ -110,7 +143,7 @@ public:
 	CButton btn;
 	ZXField fieldPWD;
 	ZXField fieldAccount;
-
+	ZXField fieldTest;
 
 };
 

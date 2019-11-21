@@ -15,7 +15,6 @@ public:
 		rc.bottom = y + height;
 		return rc;
 	}
-
 };
 class fileTool
 {

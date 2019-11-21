@@ -297,7 +297,6 @@ public:
 		return true;
 	}
 
-	
 
 	float scale;
 
