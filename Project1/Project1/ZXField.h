@@ -19,13 +19,13 @@ public:
 	void OnSize(UINT nType, CSize size) {
 
 		GetWindowRect(&windowRect);
-		ScreenToClient(&windowRect);
+	//	ScreenToClient(&windowRect);
 
 		changeSize();
 	}
 
 	void onLayout() {
-		MoveWindow(this->windowRect);
+	//	MoveWindow(this->windowRect);
 	}
 
 	LRESULT OnTextChange(UINT code, UINT id, HWND hCtrl, BOOL &bHandled) {

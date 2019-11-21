@@ -126,7 +126,7 @@ public:
 			default:
 				break;
 			}
-			rules.push_back(rule);
+			rulesCache.push_back(rule);
 
 		}
 		destWindow->bindType = equalTypeNone;
@@ -134,6 +134,47 @@ public:
 		return this;
 	}
 
+
+	void complete() {
+
+		for (int k = 0 ; k < 3; k++)
+		{
+			equalType type1;
+			equalType type2;
+			switch (k)
+			{
+
+			case 0:
+				type1 = equalTypeLeft;
+				type2 = equalTypeTop;
+				break;
+			case 1:
+				type1 = equalTypeWidth;
+				type2 = equalTypeHeight;
+				break;
+			case 2:
+				type1 = equalTypeRight;
+				type2 = equalTypeBottom;
+				break;
+
+			default:
+				break;
+			}
+		
+			for (int i = 0; i < rulesCache.size(); i++)
+			{
+				windowLayoutRule rule = rulesCache[i];
+				if (rule.selfType == type1 || rule.selfType == type2)
+				{
+					rules.push_back(rule);
+				}
+
+			}
+
+		}
+		rulesCache._Pop_back_n(rulesCache.size());
+
+	}
 
 	LayoutAbleViewImpl *  absEqualTo(int num) {
 	
@@ -180,7 +221,8 @@ public:
 	{
 		windowRect = destRect;
 		onLayout();
-	
+		CWindow *pt = dynamic_cast<CWindow *>(this);
+		pt->MoveWindow(destRect);
 		
 	}
 	for (auto it = autoLayoutSubWindows.begin();it!=autoLayoutSubWindows.end();it++)
@@ -227,7 +269,7 @@ private:
 	std::set<LayoutAbleViewImpl *> autoLayoutSubWindows;
 	std::vector<equalType> tempRules;
 	std::vector<windowLayoutRule> rules;
-
+	std::vector<windowLayoutRule> rulesCache;
 
 	CRect leftEqualTo(windowLayoutRule rule,CRect rectSelf,CRect rectSource,int offset) {
 	

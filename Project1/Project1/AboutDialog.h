@@ -36,18 +36,22 @@ public:
 		fieldPWD.SetPasswordChar('*');
 
 
-		fieldAccount.make()->height()->width()->equalTo(this, -200);
-		fieldAccount.make()->left()->top()->equalTo(this, 50);
 		
-		fieldPWD.make()->height()->equalTo(this, -200);
+		
+		fieldAccount.make()->height()->width()->equalTo(this, -200);
+		fieldAccount.make()->left()->top()->equalTo(this, 50)->complete();
+
+	
 		fieldPWD.make()->top()->equalTo(this, 50);
 		fieldPWD.make()->right()->equalTo(this, -30);
 		fieldPWD.make()->left()->equalTo(fieldAccount.layout_right(), 20);
+		fieldPWD.make()->height()->equalTo(this, -200)->complete();
 
-		fieldTest.make()->top()->equalTo(fieldPWD.layout_bottom(), 10);
+
+		fieldTest.make()->top()->equalTo(fieldPWD.layout_bottom(), 5);
 		fieldTest.make()->bottom()->equalTo(this, -20);
 		fieldTest.make()->left()->equalTo(this, 20);
-		fieldTest.make()->right()->equalTo(this, -20);
+		fieldTest.make()->right()->equalTo(this, -20)->complete();
 
 
 
@@ -56,13 +60,11 @@ public:
 
 
     void onLayout() {
-		MoveWindow(this->windowRect);
+		
 	}
 	void OnSize(UINT nType, CSize size) {
 	
-		GetWindowRect(&windowRect);
-		
-		ScreenToClient(&windowRect);
+		GetClientRect(&windowRect);
 
 		changeSize();
 	
