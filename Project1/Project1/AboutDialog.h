@@ -4,7 +4,7 @@
 #include "ZXTools.h"
 #include "TestView.h"
 #include "ViewLayoutExtension.h"
-class AboutDialog : public  CDialogImpl<AboutDialog>, public LayoutAbleViewImpl
+class AboutDialog : public  CDialogImpl<AboutDialog>, public LayoutAbleViewImpl<AboutDialog>
 {
 	
 public:
@@ -17,10 +17,10 @@ public:
 	BEGIN_MSG_MAP(AboutDialog)
 		MSG_WM_INITDIALOG(OnInitDialog)
 		MSG_WM_PAINT(OnPaint)
-		MSG_WM_SIZE(OnSize)
+	//	MSG_WM_SIZE(OnSize)
+		CHAIN_MSG_MAP(LayoutAbleViewImpl<AboutDialog>)
 		COMMAND_ID_HANDLER(IDCANCEL,OnCancle)
 		COMMAND_ID_HANDLER(IDOK,OnOK )
-
 		REFLECT_NOTIFICATIONS()
 	END_MSG_MAP()
 
@@ -35,25 +35,29 @@ public:
 
 		fieldPWD.SetPasswordChar('*');
 
-
-		
-		
-		fieldAccount.make()->height()->width()->equalTo(this, -200);
-		fieldAccount.make()->left()->top()->equalTo(this, 50)->complete();
-
 	
-		fieldPWD.make()->top()->equalTo(this, 50);
-		fieldPWD.make()->right()->equalTo(this, -30);
-		fieldPWD.make()->left()->equalTo(fieldAccount.layout_right(), 20);
-		fieldPWD.make()->height()->equalTo(this, -200)->complete();
+		regist(&fieldAccount)->height()->width()->bindlTo(this, equalTypeNone, -200);
+		regist(&fieldAccount)->left()->top()->bindlTo(this, equalTypeNone, 50)->complete();
 
+		regist(&fieldPWD)->height()->bindlTo(&fieldAccount, equalTypeNone, 0);
+		regist(&fieldPWD)->right()->bindlTo(this, equalTypeRight, -20);
+		regist(&fieldPWD)->left()->bindlTo(&fieldAccount, equalTypeRight, 20);
+		regist(&fieldPWD)->top()->bindlTo(&fieldAccount, equalTypeNone, 0)->complete();
+		
 
-		fieldTest.make()->top()->equalTo(fieldPWD.layout_bottom(), 5);
-		fieldTest.make()->bottom()->equalTo(this, -20);
-		fieldTest.make()->left()->equalTo(this, 20);
-		fieldTest.make()->right()->equalTo(this, -20)->complete();
-
-
+// 		fieldAccount.make()->height()->width()->equalTo(this, -200);
+// 		fieldAccount.make()->left()->top()->equalTo(this, 50)->complete();
+// 
+// 	
+// 		fieldPWD.make()->top()->equalTo(this, 50);
+// 		fieldPWD.make()->left()->equalTo(fieldAccount.layout_right(), 20);
+// 		fieldPWD.make()->height()->width()->equalTo(fieldAccount.layout_height(), 0)->complete();
+// 
+// 
+// 		fieldTest.make()->top()->equalTo(fieldPWD.layout_bottom(), 5);
+// 		fieldTest.make()->bottom()->equalTo(this, -20);
+// 		fieldTest.make()->left()->equalTo(this, 20);
+// 		fieldTest.make()->right()->equalTo(this, -20)->complete();
 
 		return true;
 	}
@@ -62,13 +66,17 @@ public:
     void onLayout() {
 		
 	}
-	void OnSize(UINT nType, CSize size) {
-	
-		GetClientRect(&windowRect);
-
-		changeSize();
-	
-	}
+// 	void OnSize(UINT nType, CSize size) {
+// 	
+// 		
+// 		CRect window;
+// 		CRect client;
+// 		GetClientRect(&windowRect);
+// 		GetWindowRect(&window);
+// 		GetClientRect(&client);
+// 		changeSize();
+// 		changeSubSize();
+// 	}
 
 	void OnPaint(CDCHandle dc) {
 

@@ -24,7 +24,6 @@ public:
 		MSG_WM_MOUSEWHEEL(OnMouseWheel)
 	END_MSG_MAP ()
 
-
 	TableViewProtocol *delegate;
 
 	void OnPaint(CDCHandle)

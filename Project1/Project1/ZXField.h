@@ -1,13 +1,13 @@
 #pragma once
 #include "stdafx.h"
 #include "ViewLayoutExtension.h"
-class ZXField : public CWindowImpl<ZXField,CEdit>, public LayoutAbleViewImpl
+class ZXField : public CWindowImpl<ZXField,CEdit>
+	//, public LayoutAbleViewImpl
 {
 public:
 	CString currentText;
 	
 	BEGIN_MSG_MAP(ZXField)
-
 		REFLECTED_COMMAND_CODE_HANDLER(EN_CHANGE, OnTextChange)
 		REFLECTED_COMMAND_CODE_HANDLER(EN_UPDATE, OnTextWillChange)
 		MSG_WM_SIZE(OnSize)
@@ -18,15 +18,17 @@ public:
 
 	void OnSize(UINT nType, CSize size) {
 
-		GetWindowRect(&windowRect);
-	//	ScreenToClient(&windowRect);
 
-		changeSize();
-	}
+		CRect window;
+		CRect client;
+		GetWindowRect(&window);
+		GetClientRect(&client);
 
-	void onLayout() {
-	//	MoveWindow(this->windowRect);
 	}
+// 
+// 	void onLayout() {
+// 	//	MoveWindow(this->windowRect);
+// 	}
 
 	LRESULT OnTextChange(UINT code, UINT id, HWND hCtrl, BOOL &bHandled) {
 		

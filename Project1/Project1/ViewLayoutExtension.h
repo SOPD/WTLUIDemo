@@ -3,6 +3,9 @@
 #include <vector>
 #include <algorithm>
 #include <set>
+#include <map>
+#include <xutility>
+#include <cstring>
 enum equalType{
 	equalTypeNone,
 	equalTypeLeft,
@@ -12,8 +15,7 @@ enum equalType{
 	equalTypeTop,
 	equalTypeBottom
 };
-
-
+template<typename T>
 class  LayoutAbleViewImpl
 {
 	struct windowLayoutRule
@@ -24,17 +26,54 @@ class  LayoutAbleViewImpl
 		equalType selfType;
 		int offset;
 	};
+
+
+	struct windowLaytouRegistRule
+	{
+		bool isAbs;
+		CWindow *windowSource;
+		CWindow *windowDest;
+		equalType typeSource;
+		equalType typeDest;
+		int offset;
+		CWindow *parentWindow;
+	};
+ typedef std::map<CWindow *, std::vector<windowLaytouRegistRule>> regRuleMap;
+
 public:
+
+	BEGIN_MSG_MAP(CDoubleBufferImpl)
+	
+		MESSAGE_HANDLER(WM_SIZE, OnSize)
+
+	END_MSG_MAP()
+
 
 	equalType bindType = equalTypeNone;
 	CRect windowRect;
 
+	CWindow *tempDest = nullptr;
+
+
+	LRESULT OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+	{
+		
+		changeSubSize();
+		
+		return 0;
+	}
 	virtual void onLayout() {};
 
 	LayoutAbleViewImpl *  make() { 
 		tempRules._Pop_back_n(tempRules.size());
 		return this;
 	}
+	LayoutAbleViewImpl *  regist(CWindow * destWindow) {
+		tempRules._Pop_back_n(tempRules.size());
+		tempDest = destWindow;
+		return this;
+	}
+
 	LayoutAbleViewImpl * left() {
 		tempRules.push_back(equalTypeLeft);
 		return this;
@@ -66,66 +105,14 @@ public:
 
 		for (int i = 0;i< tempRules.size();i++)
 		{
-			windowLayoutRule rule;
-			switch (tempRules[i])
-			{
-			case equalTypeLeft:
-				rule = {
+			windowLayoutRule rule  = {
 				false,
 				destWindow,
 				destWindow->bindType,
-				equalTypeLeft,
+				tempRules[i],
 				offset
 				};
-				break;
-			case equalTypeRight:
-				rule = {
-					false,
-					destWindow,
-					destWindow->bindType,
-					equalTypeRight,
-					offset
-				};
-				break;
-			case equalTypeTop:
-				rule = {
-					false,
-					destWindow,
-					destWindow->bindType,
-					equalTypeTop,
-					offset
-				};
-				break;
-			case equalTypeBottom:
-				rule = {
-					false,
-					destWindow,
-					destWindow->bindType,
-					equalTypeBottom,
-					offset
-				};
-				break;
-			case equalTypeHeight:
-				rule = {
-					false,
-					destWindow,
-					destWindow->bindType,
-					equalTypeHeight,
-					offset
-				};
-				break;
-			case equalTypeWidth:
-				rule = {
-					false,
-					destWindow,
-					destWindow->bindType,
-					equalTypeWidth,
-					offset
-				};
-				break;
-			default:
-				break;
-			}
+		
 			rulesCache.push_back(rule);
 
 		}
@@ -133,46 +120,111 @@ public:
 	
 		return this;
 	}
+	LayoutAbleViewImpl *  bindlTo(CWindow * sourceWindow,equalType sourceType, int offset) {
 
+		CWindow *father = dynamic_cast<CWindow *> (this);
+		for (int i = 0; i < tempRules.size(); i++)
+		{
+			windowLaytouRegistRule rule = {
+				false,
+				sourceWindow,
+				tempDest,
+				sourceType,
+				tempRules[i],
+				offset,
+				father
+			};
+         
+			registsCache.push_back(rule);
+		}
+
+		return this;
+	}
 
 	void complete() {
-
-		for (int k = 0 ; k < 3; k++)
+		if (tempDest == nullptr)
 		{
-			equalType type1;
-			equalType type2;
-			switch (k)
+			for (int k = 0; k < 3; k++)
 			{
-
-			case 0:
-				type1 = equalTypeLeft;
-				type2 = equalTypeTop;
-				break;
-			case 1:
-				type1 = equalTypeWidth;
-				type2 = equalTypeHeight;
-				break;
-			case 2:
-				type1 = equalTypeRight;
-				type2 = equalTypeBottom;
-				break;
-
-			default:
-				break;
-			}
-		
-			for (int i = 0; i < rulesCache.size(); i++)
-			{
-				windowLayoutRule rule = rulesCache[i];
-				if (rule.selfType == type1 || rule.selfType == type2)
+				equalType type1;
+				equalType type2;
+				switch (k)
 				{
-					rules.push_back(rule);
+
+				case 0:
+					type1 = equalTypeLeft;
+					type2 = equalTypeTop;
+					break;
+				case 1:
+					type1 = equalTypeWidth;
+					type2 = equalTypeHeight;
+					break;
+				case 2:
+					type1 = equalTypeRight;
+					type2 = equalTypeBottom;
+					break;
+
+				default:
+					break;
+				}
+
+				for (int i = 0; i < rulesCache.size(); i++)
+				{
+					windowLayoutRule rule = rulesCache[i];
+					if (rule.selfType == type1 || rule.selfType == type2)
+					{
+						rules.push_back(rule);
+					}
+
 				}
 
 			}
-
+			rulesCache._Pop_back_n(rulesCache.size());
 		}
-		rulesCache._Pop_back_n(rulesCache.size());
+		else
+		{
+
+			std::vector<windowLaytouRegistRule> tempReg;
+
+			for (int k = 0; k < 3; k++)
+			{
+				equalType type1;
+				equalType type2;
+				switch (k)
+				{
+
+				case 0:
+					type1 = equalTypeLeft;
+					type2 = equalTypeTop;
+					break;
+				case 1:
+					type1 = equalTypeWidth;
+					type2 = equalTypeHeight;
+					break;
+				case 2:
+					type1 = equalTypeRight;
+					type2 = equalTypeBottom;
+					break;
+
+				default:
+					break;
+				}
+
+				for (int i = 0; i < registsCache.size(); i++)
+				{
+					windowLaytouRegistRule rule = registsCache[i];
+					if (rule.typeDest == type1 || rule.typeDest == type2)
+					{
+						tempReg.push_back(rule);
+					}
+
+				}
+
+			}
+			layoutSubPool[tempDest] = tempReg;
+        	registsCache._Pop_back_n(registsCache.size());
+		}
+
 
 	}
 
@@ -182,7 +234,7 @@ public:
 	}
 
 	void changeSize() {
-		CRect destRect;
+	CRect destRect;
 	
 	for (int i = 0; i < rules.size();i++ )
 	{
@@ -233,6 +285,73 @@ public:
 
 	}
 
+	void changeSubSize() {
+		CRect destRect;
+		
+		for (auto it = layoutSubPool.begin(); it != layoutSubPool.end(); it++)
+		{
+
+			std::vector<windowLaytouRegistRule> list =(it)->second;
+
+			for (int i = 0; i < list.size(); i++)
+			{
+				windowLaytouRegistRule rule = list[i];
+			
+				windowLayoutRule consRule = {
+			rule.isAbs,
+			nullptr,
+			rule.typeSource,
+			rule.typeDest,
+			rule.offset
+				};
+				CRect superRect;
+
+				rule.windowSource->GetWindowRect(&superRect);
+				//×ø±êÏµ×ª»»
+// 				if (rule.parentWindow != rule.windowSource)
+// 				{
+					rule.parentWindow->ScreenToClient(&superRect);
+			//	}
+			
+
+				switch (rule.typeDest)
+				{
+				case equalTypeLeft:
+					destRect = leftEqualTo(consRule, destRect, superRect, rule.offset);
+					break;
+				case equalTypeRight:
+					destRect = rightEqualTo(consRule, destRect, superRect, rule.offset);
+					break;
+				case equalTypeTop:
+					destRect = topEqualTo(consRule, destRect, superRect, rule.offset);
+					break;
+				case equalTypeBottom:
+					destRect = bottomEqualTo(consRule, destRect, superRect, rule.offset);
+					break;
+				case equalTypeWidth:
+					destRect = widthEqualTo(consRule, destRect, superRect, rule.offset);
+					break;
+				case equalTypeHeight:
+					destRect = heightEqualTo(consRule, destRect, superRect, rule.offset);
+					break;
+
+				default:
+					break;
+				}
+			}
+				
+			CWindow *window = it->first;
+			window->MoveWindow(destRect, 1);
+
+			int i = 0;
+		}
+		
+
+	}
+
+
+
+
 
 	void registSbuWindow(LayoutAbleViewImpl * window) {
 
@@ -270,6 +389,8 @@ private:
 	std::vector<equalType> tempRules;
 	std::vector<windowLayoutRule> rules;
 	std::vector<windowLayoutRule> rulesCache;
+	std::vector<windowLaytouRegistRule> registsCache;
+	regRuleMap layoutSubPool;
 
 	CRect leftEqualTo(windowLayoutRule rule,CRect rectSelf,CRect rectSource,int offset) {
 	
@@ -366,4 +487,5 @@ private:
 	}
 
 };
+
 
